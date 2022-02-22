@@ -1,0 +1,57 @@
+enum SaleType {
+  Single,
+  Bundle
+}
+
+type OpenSeaSale @entity {
+  "The transaction hash when the OpenSea sale occured"
+  id: ID!
+
+  "The sale type (Single | Bundle)"
+  saleType: SaleType
+
+  "The block number of the OpenSea sale"
+  blockNumber: BigInt!
+
+  "The timestamp of the OpenSea sale"
+  blockTimestamp: BigInt!
+
+  "A raw formated string of the token(s) sold (i.e NFTContract1-TokenID::NFTContract2-TokenID::NFTContract3-TokenID)"
+  summaryTokensSold: String!
+
+  "Nft <=> OpenSeaSale lookup table to get the list of Nfts sold in this sale"
+  nftOpenSeaSaleLookupTable: [NftOpenSeaSaleLookupTable!]! @derivedFrom(field: "openSeaSale")
+
+  "The seller address"
+  seller: Bytes!
+
+  "The buyer address"
+  buyer: Bytes!
+
+  "The ERC20 token used for the payement"
+  paymentToken: Bytes!
+
+  "The price of the OpenSea sale"
+  price: BigInt!
+}
+
+
+type Nft @entity {
+  "The complete NFT id sold (NFT contract - Token ID)"
+  id: ID!
+
+  "Nft <=> OpenSeaSale lookup table to get the OpenSea Sale history"
+  nftOpenSeaSaleLookupTable: [NftOpenSeaSaleLookupTable!]! @derivedFrom(field: "nft")
+}
+
+
+type NftOpenSeaSaleLookupTable @entity {
+  "Set to `Nft Id <=> OpenSeaSale Id"
+  id: ID!
+
+  "The Nft sold"
+  nft: Nft!
+
+  "The association OpenSea sale"
+  openSeaSale: OpenSeaSale!
+}
